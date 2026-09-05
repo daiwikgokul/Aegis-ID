@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS·ID — Adaptive Identity Verification</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <div class="brand-text">
+        <h1>AEGIS·ID</h1>
+        <span>Adaptive Identity</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-item active" data-page="home" onclick="show('home', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        Overview
+      </div>
+      <div class="nav-item" data-page="register" onclick="show('register', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+        Register User
+      </div>
+      <div class="nav-item" data-page="train" onclick="show('train', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4"/></svg>
+        Train Model
+      </div>
+      <div class="nav-item" data-page="verify" onclick="show('verify', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3Z"/></svg>
+        Verify Identity
+      </div>
+      <div class="nav-item" data-page="voiceid" onclick="show('voiceid', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/></svg>
+        Voice ID
+      </div>
+      <div class="nav-item" data-page="attacklab" onclick="show('attacklab', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.5 17a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        Attack Lab
+      </div>
+      <div class="nav-item" data-page="auditlog" onclick="show('auditlog', this); loadAuditLog();">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6M9 16h6M9 8h2"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>
+        Audit Log
+      </div>
+      <div class="nav-item" data-page="about" onclick="show('about', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/></svg>
+        About
+      </div>
+    </nav>
+
+    <div class="sidebar-status">
+      <div class="status-row">
+        <span><span id="dotTrained" class="dot off"></span>Model</span>
+        <span id="statTrained" class="value">checking…</span>
+      </div>
+      <div class="status-row">
+        <span><span class="dot on"></span>Users</span>
+        <span id="statUsers" class="value">—</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+
+    <!-- ---------- OVERVIEW ---------- -->
+    <section id="home" class="page active">
+      <div class="hero">
+        <div class="eyebrow">Deepfake-resistant identity system</div>
+        <h1>A face gets you noticed.<br><em>Trust</em> gets you access.</h1>
+        <p class="subtitle">
+          AEGIS·ID pairs facial recognition with a live trust-score engine.
+          Every verification is scored on match consistency, recognition
+          confidence, liveness and image quality — then routed through
+          risk-based adaptive authentication instead of a single pass/fail check.
+        </p>
+      </div>
+
+      <div class="system-overview">
+        <h4>How verification works</h4>
+        <div class="overview-row">
+          <span class="overview-label">Capture</span>
+          <span class="overview-desc">Webcam frames are sampled continuously across the verification window.</span>
+        </div>
+        <div class="overview-row">
+          <span class="overview-label">Match</span>
+          <span class="overview-desc">LBPH recognition compares each face against the trained model.</span>
+        </div>
+        <div class="overview-row">
+          <span class="overview-label">Liveness</span>
+          <span class="overview-desc">A randomized blink, head-motion, or hand-raise challenge confirms a live subject, not a photo or replay.</span>
+        </div>
+        <div class="overview-row">
+          <span class="overview-label">Decision</span>
+          <span class="overview-desc">The trust score decides: grant, request step-up, or deny — with voice confirmation required at higher risk.</span>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <h4>Quick actions</h4>
+        <a class="action-row-item" onclick="show('register')">
+          <div class="ari-text"><b>Register User</b><span>Capture a labelled face dataset for a new identity.</span></div>
+          <svg class="ari-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+        <a class="action-row-item" onclick="show('train')">
+          <div class="ari-text"><b>Train Model</b><span>Fit the LBPH recognizer on every registered identity.</span></div>
+          <svg class="ari-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+        <a class="action-row-item" onclick="show('verify')">
+          <div class="ari-text"><b>Verify Identity</b><span>Run a live check and see the trust score decide access.</span></div>
+          <svg class="ari-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+        <a class="action-row-item" onclick="show('about')">
+          <div class="ari-text"><b>About</b><span>How the trust score and adaptive auth actually work.</span></div>
+          <svg class="ari-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- ---------- REGISTER ---------- -->
+    <section id="register" class="page">
+      <button class="back" onclick="show('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
+
+      <div class="eyebrow">Step 01</div>
+      <h2>Register a user</h2>
+      <p class="subtitle">One continuous flow: face capture with a live liveness challenge, followed automatically by voice enrollment — no separate steps to click through. Every face frame is screened for spoof resistance; a photo or screen held up to the camera won't enroll.</p>
+
+      <div class="challenge-banner" id="registerChallengeBanner" style="display:none;">
+        <div class="challenge-banner-label" id="registerChallengeBannerLabel">Enrollment liveness check</div>
+        <div class="challenge-banner-instruction" id="registerChallengeInstruction"></div>
+      </div>
+
+      <div class="panel">
+        <label class="field-label">User ID</label>
+        <input id="user" placeholder="e.g. rohan_2026">
+
+        <button class="btn" onclick="registerUser()">Start Registration</button>
+
+        <div id="registerProgress" class="progress-container">
+          <div class="progress-bar"><div id="registerBar"></div></div>
+          <span id="registerPercent">0%</span>
+        </div>
+
+        <div class="steps-panel" style="margin-top:20px;">
+          <h4>Registration steps</h4>
+          <div class="astep" id="regstep-face">
+            <div class="marker">1</div>
+            <div class="body"><b>Face capture &amp; liveness</b><span>Challenge-gated capture, screened for spoof resistance</span></div>
+          </div>
+          <div class="astep" id="regstep-voice">
+            <div class="marker">2</div>
+            <div class="body"><b>Voice enrollment</b><span>Two short takes of a spoken phrase</span></div>
+          </div>
+        </div>
+
+        <div id="regMsg" class="msg"></div>
+        <div class="challenge-result" id="registerChallengeResult" style="display:none;"></div>
+        <div id="regVoiceMsg" class="msg"></div>
+
+        <div class="stat-row">
+          <div class="stat-chip"><div class="n" id="regCaptured">—</div><div class="l">Images accepted</div></div>
+          <div class="stat-chip"><div class="n" id="regRejected">—</div><div class="l">Rejected (low spoof-resistance)</div></div>
+          <div class="stat-chip"><div class="n" id="regSpoof">—</div><div class="l">Avg. spoof resistance</div></div>
+        </div>
+        <div class="stat-row" id="regVoiceStatRow" style="display:none;">
+          <div class="stat-chip"><div class="n" id="regVoiceStatus">—</div><div class="l">Voice enrollment</div></div>
+          <div class="stat-chip"><div class="n" id="regVoiceLL">—</div><div class="l">Reference log-likelihood</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- TRAIN ---------- -->
+    <section id="train" class="page">
+      <button class="back" onclick="show('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
+
+      <div class="eyebrow">Step 02</div>
+      <h2>Train the model</h2>
+      <p class="subtitle">Fits the LBPH face recognizer across every registered identity in the dataset. Re-run this after adding new users.</p>
+
+      <div class="panel">
+        <button class="btn" onclick="train()">Train Model</button>
+
+        <div id="trainProgress" class="progress-container">
+          <div class="progress-bar"><div id="trainBar"></div></div>
+          <span id="trainPercent">0%</span>
+        </div>
+
+        <div id="trainMsg" class="msg"></div>
+
+        <div class="stat-row">
+          <div class="stat-chip"><div class="n" id="trainUsers">—</div><div class="l">Identities trained</div></div>
+          <div class="stat-chip"><div class="n" id="trainImages">—</div><div class="l">Images used</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- VERIFY ---------- -->
+    <section id="verify" class="page">
+      <button class="back" onclick="show('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
+
+      <div class="eyebrow">Step 03</div>
+      <h2>Verify identity</h2>
+      <p class="subtitle">One continuous flow from a single button: face capture and trust scoring, an automatic step-up challenge if the score lands in the medium-risk band, and an automatic voice confirmation if this identity has voice enrolled — one combined decision at the end.</p>
+
+      <div class="verify-status-line" id="verifyStatusLine" style="display:none;">
+        <span class="pulse"></span><span id="verifyStatus">Scanning for face…</span>
+      </div>
+
+      <div class="challenge-banner" id="challengeBanner" style="display:none;">
+        <div class="challenge-banner-label">Step-up challenge</div>
+        <div class="challenge-banner-instruction" id="challengeInstruction"></div>
+      </div>
+
+      <div class="verify-layout">
+        <div class="gauge-wrap">
+          <div class="gauge">
+            <svg width="180" height="180" viewBox="0 0 180 180">
+              <circle class="gauge-track" cx="90" cy="90" r="80"/>
+              <circle id="gaugeArc" class="gauge-value" cx="90" cy="90" r="80"/>
+            </svg>
+            <div class="gauge-center">
+              <div class="score" id="gaugeScore">—</div>
+              <div class="of">Trust score</div>
+            </div>
+          </div>
+          <div class="identity-line" id="identityLine"></div>
+          <div class="challenge-result" id="challengeResult" style="display:none;"></div>
+
+          <div class="risk-assessment" id="riskAssessment" style="display:none;">
+            <div class="ra-label">Risk assessment</div>
+            <div class="ra-tier" id="riskTierText">—</div>
+            <div class="ra-score">Trust Score: <b id="riskScoreText">—</b> / 100</div>
+            <div class="ra-decision pending" id="raDecisionBadge">Awaiting scan</div>
+          </div>
+
+          <div class="action-row" id="verifyActions">
+            <button class="btn" onclick="verify()">Start Verification</button>
+          </div>
+        </div>
+
+        <div class="verify-right">
+          <div class="status-panel">
+            <h4>Authentication status</h4>
+            <div class="status-row">
+              <span class="sr-label">Identity match</span>
+              <span class="sr-value pending" id="status-identity">— Pending</span>
+            </div>
+            <div class="status-row">
+              <span class="sr-label">Liveness</span>
+              <span class="sr-value pending" id="status-liveness">— Pending</span>
+            </div>
+            <div class="status-row">
+              <span class="sr-label">Presentation attack</span>
+              <span class="sr-value pending" id="status-spoof">— Pending</span>
+            </div>
+            <div class="status-row">
+              <span class="sr-label">Image quality</span>
+              <span class="sr-value pending" id="status-quality">— Pending</span>
+            </div>
+
+            <details class="detail-toggle">
+              <summary>Show detailed signal breakdown</summary>
+              <div class="detail-body">
+                <div class="factor">
+                  <div class="factor-top"><span class="fname">Match consistency</span><span class="fval" id="fval-match_consistency">—</span></div>
+                  <div class="factor-bar"><div id="fbar-match_consistency"></div></div>
+                </div>
+                <div class="factor">
+                  <div class="factor-top"><span class="fname">Recognition confidence</span><span class="fval" id="fval-recognition_confidence">—</span></div>
+                  <div class="factor-bar"><div id="fbar-recognition_confidence"></div></div>
+                </div>
+                <div class="factor">
+                  <div class="factor-top"><span class="fname">Liveness</span><span class="fval" id="fval-liveness">—</span></div>
+                  <div class="factor-bar"><div id="fbar-liveness"></div></div>
+                </div>
+                <div class="factor">
+                  <div class="factor-top"><span class="fname">Spoof resistance</span><span class="fval" id="fval-spoof_resistance">—</span></div>
+                  <div class="factor-bar"><div id="fbar-spoof_resistance"></div></div>
+                </div>
+                <div class="factor">
+                  <div class="factor-top"><span class="fname">Image quality</span><span class="fval" id="fval-image_quality">—</span></div>
+                  <div class="factor-bar"><div id="fbar-image_quality"></div></div>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="steps-panel">
+            <h4>Adaptive authentication</h4>
+            <div class="astep" id="step-capture">
+              <div class="marker">1</div>
+              <div class="body"><b>Face &amp; liveness capture</b><span>Sample frames from the live webcam feed</span></div>
+            </div>
+            <div class="astep" id="step-match">
+              <div class="marker">2</div>
+              <div class="body"><b>Recognition match</b><span>Compare against the trained identity model</span></div>
+            </div>
+            <div class="astep" id="step-risk">
+              <div class="marker">3</div>
+              <div class="body"><b>Risk assessment</b><span>Combine signals into a single trust score</span></div>
+            </div>
+            <div class="astep" id="step-decision">
+              <div class="marker">4</div>
+              <div class="body"><b>Access decision</b><span>Grant, step-up, or deny based on risk</span></div>
+            </div>
+            <div class="astep" id="step-voice">
+              <div class="marker">5</div>
+              <div class="body"><b>Voice confirmation</b><span>Second factor, if this identity has voice enrolled</span></div>
+            </div>
+          </div>
+
+          <div id="verifyMsg" class="msg"></div>
+          <div id="verifyVoiceResult" class="challenge-result" style="display:none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- VOICE ID ---------- -->
+    <section id="voiceid" class="page">
+      <button class="back" onclick="show('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
+
+      <div class="eyebrow">Second factor · test &amp; manage</div>
+      <h2>Voice ID</h2>
+      <p class="subtitle">Voice is enrolled automatically as part of registration — this page tests and manages that same data: verify it works, check who's enrolled, or enroll/re-enroll a user's voice on its own (e.g. someone registered before voice recognition existed, or their voiceprint needs updating). Classical MFCC + Gaussian Mixture Model speaker verification, trained from scratch on each user's own recording — no pretrained model, no internet access needed.</p>
+
+      <div id="voiceUnavailableMsg" class="msg error" style="display:none;margin-bottom:20px;"></div>
+
+      <div class="attack-grid">
+        <div class="panel">
+          <label class="field-label">User</label>
+          <select id="voiceUser" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid var(--hairline-2);background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-mono);font-size:13px;margin-bottom:8px;">
+            <option value="">Loading registered users…</option>
+          </select>
+          <div id="voiceUserStatus" style="font-size:11.5px;margin-bottom:16px;"></div>
+
+          <div class="attack-mode-row">
+            <button class="mode-btn selected" id="voiceModeEnroll" onclick="setVoiceMode('enroll')">Enroll voice</button>
+            <button class="mode-btn" id="voiceModeVerify" onclick="setVoiceMode('verify')">Verify voice</button>
+          </div>
+
+          <div id="voiceEnrollPanel">
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
+              Records two short takes of the same phrase — the first trains the voice model, the second
+              calibrates a per-user reference score. Speak naturally and consistently across both takes.
+              This is the same enrollment that already ran automatically for a user who registered with
+              voice — running it again here re-enrolls (overwrites) their voiceprint.
+            </p>
+            <button class="btn" onclick="enrollVoice()">Start Voice Enrollment</button>
+          </div>
+
+          <div id="voiceVerifyPanel" style="display:none;">
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
+              Records a fresh take and compares it against the user's stored voice model — the same
+              check that runs automatically during high-risk verification, testable here on its own.
+            </p>
+            <button class="btn" onclick="verifyVoice()">Start Voice Verification</button>
+          </div>
+
+          <div class="verify-status-line" id="voiceStatusLine" style="display:none;margin-top:18px;">
+            <span class="pulse"></span><span id="voiceStatusText">Recording…</span>
+          </div>
+
+          <div id="voiceMsg" class="msg"></div>
+        </div>
+
+        <div class="panel">
+          <label class="field-label">Result</label>
+          <div id="voiceResultEmpty" style="color:var(--text-faint);font-size:12.5px;">No voice check run yet.</div>
+          <div id="voiceResultBox" style="display:none;">
+            <div class="risk-badge" id="voiceResultBadge" style="margin-top:0;"></div>
+            <div class="stat-row">
+              <div class="stat-chip"><div class="n" id="voiceScoreStat">—</div><div class="l">Voice score</div></div>
+              <div class="stat-chip"><div class="n" id="voiceSelfLLStat">—</div><div class="l">Reference log-likelihood</div></div>
+            </div>
+            <div id="voiceChallengeDetail" class="attack-metadata-line" style="display:none;margin-top:14px;"></div>
+          </div>
+
+          <label class="field-label" style="margin-top:22px;">Enrolled voiceprints</label>
+          <div class="attack-log" id="voiceEnrolledList">
+            <div style="color:var(--text-faint);font-size:12.5px;">None yet.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- ATTACK LAB ---------- -->
+    <section id="attacklab" class="page">
+      <button class="back" onclick="show('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
+
+      <div class="eyebrow">Security testing console</div>
+      <h2>Attack Lab</h2>
+      <p class="subtitle">Controlled presentation-attack testing against the exact same authentication pipeline used during normal verification — nothing here is hard-coded or scripted. The signals decide the outcome.</p>
+
+      <div class="panel" style="margin-bottom:24px;">
+        <div style="display:flex;gap:20px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:220px;">
+            <div class="field-label" style="color:var(--violet);">Attack simulation</div>
+            <p style="font-size:12.5px;color:var(--text-muted);line-height:1.6;">Upload a photo — the server applies a synthetic degradation approximating the chosen attack type, then scores it. Repeatable, no physical props needed. <b>These are approximations of attack signatures, not real deepfakes or real replay footage</b> — useful for consistent signal testing, not a claim of matching real attack fidelity.</p>
+          </div>
+          <div style="flex:1;min-width:220px;">
+            <div class="field-label" style="color:var(--cyan);">Live attack demonstration</div>
+            <p style="font-size:12.5px;color:var(--text-muted);line-height:1.6;">Present an actual printed photo, phone screen, or video to the webcam (or read a phrase for voice attacks) — the real camera/microphone capture goes through the identical scoring pipeline as genuine verification. This is the more convincing demo, since nothing is simulated.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="eyebrow">Face / presentation attacks</div>
+
+      <div class="attack-grid">
+        <div class="panel">
+          <label class="field-label">Attack type</label>
+          <div class="attack-type-row" id="attackTypeRow">
+            <span style="color:var(--text-faint);font-size:13px;">Loading attack types…</span>
+          </div>
+
+          <label class="field-label">Mode</label>
+          <div class="attack-mode-row">
+            <button class="mode-btn selected" id="modeLiveBtn" onclick="setAttackMode('live')">Live demonstration</button>
+            <button class="mode-btn" id="modeSimBtn" onclick="setAttackMode('simulate')">Simulation (upload)</button>
+          </div>
+
+          <div id="liveModePanel">
+            <button class="btn" id="attackRunBtn" onclick="runAttack()" disabled>Run Attack Attempt</button>
+          </div>
+
+          <div id="simModePanel" style="display:none;">
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.6;">
+              Self-contained by default — pick an already-enrolled identity and the server sources one
+              of their own registration photos automatically, no file to prepare beforehand. The server
+              applies synthetic degradation matching the selected attack type, then scores the result
+              through the same pipeline. See the note above on what this does and doesn't prove.
+            </p>
+
+            <label class="field-label">Source</label>
+            <select id="attackSourceUser" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid var(--hairline-2);background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-mono);font-size:13px;margin-bottom:14px;">
+              <option value="">Loading enrolled users…</option>
+            </select>
+
+            <label class="field-label">Or Upload Your Own Photo or Video</label>
+            <input type="file" id="attackFileInput" accept="image/*,video/mp4,video/quicktime,video/webm,video/x-msvideo" style="width:100%;padding:10px 0;margin-bottom:14px;">
+            <p style="font-size:11.5px;color:var(--text-faint);margin:-10px 0 14px;line-height:1.5;">
+              Video files: one representative frame is extracted and scored the same way a photo would be — MP4 is the most reliable format.
+            </p>
+
+            <button class="btn" id="attackSimBtn" onclick="runSimulatedAttack()" disabled>Run Simulated Attack</button>
+            <button class="btn secondary" id="attackVariantBtn" onclick="runSimulatedAttack(true)" style="display:none;">Generate New Variant</button>
+          </div>
+
+          <div class="verify-status-line" id="attackStatusLine" style="display:none;margin-top:18px;">
+            <span class="pulse"></span><span id="attackStatus">Scanning for face…</span>
+          </div>
+
+          <div class="attack-result" id="attackResult" style="display:none;">
+            <div class="attack-result-badge" id="attackResultBadge"></div>
+            <div class="attack-result-detail" id="attackResultDetail"></div>
+
+            <div class="factor-panel" style="margin-top:14px;">
+              <h4>Signals triggered</h4>
+              <div class="factor">
+                <div class="factor-top"><span class="fname">Face match</span><span class="fval" id="afval-match_consistency">—</span></div>
+                <div class="factor-bar"><div id="afbar-match_consistency"></div></div>
+              </div>
+              <div class="factor">
+                <div class="factor-top"><span class="fname">Liveness</span><span class="fval" id="afval-liveness">—</span></div>
+                <div class="factor-bar"><div id="afbar-liveness"></div></div>
+              </div>
+              <div class="factor">
+                <div class="factor-top"><span class="fname">Texture</span><span class="fval" id="afval-texture">—</span></div>
+                <div class="factor-bar"><div id="afbar-texture"></div></div>
+              </div>
+              <div class="factor">
+                <div class="factor-top"><span class="fname">Moiré</span><span class="fval" id="afval-moire">—</span></div>
+                <div class="factor-bar"><div id="afbar-moire"></div></div>
+              </div>
+              <div class="factor">
+                <div class="factor-top"><span class="fname">Spatial consistency</span><span class="fval" id="afval-spatial">—</span></div>
+                <div class="factor-bar"><div id="afbar-spatial"></div></div>
+              </div>
+            </div>
+
+            <div class="attack-decision-row" id="attackDecisionRow">
+              <div class="attack-decision-chip"><div class="l">Trust score</div><div class="v" id="afTrustScore">—</div></div>
+              <div class="attack-decision-chip"><div class="l">Risk</div><div class="v" id="afRiskTier">—</div></div>
+              <div class="attack-decision-chip"><div class="l">Decision</div><div class="v" id="afDecision">—</div></div>
+            </div>
+
+            <div class="attack-metadata-line" id="attackMetadataLine" style="display:none;"></div>
+          </div>
+
+          <div id="attackMsg" class="msg"></div>
+        </div>
+
+        <div class="panel">
+          <label class="field-label">Scorecard</label>
+          <div class="stat-row" style="margin-top:0;">
+            <div class="stat-chip"><div class="n" id="attackTotal">0</div><div class="l">Attempts</div></div>
+            <div class="stat-chip"><div class="n" id="attackBlocked">0</div><div class="l">Blocked</div></div>
+            <div class="stat-chip"><div class="n" id="attackRate">—</div><div class="l">Block rate</div></div>
+          </div>
+
+          <label class="field-label" style="margin-top:22px;">Recent attempts</label>
+          <div class="attack-log" id="attackLog">
+            <div style="color:var(--text-faint);font-size:12.5px;">No attempts yet.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="eyebrow" style="margin-top:32px;">Voice attacks</div>
+      <p class="subtitle" style="margin-bottom:20px;">No simulation mode for voice — there's no synthesized-audio degradation pipeline to honestly approximate a replay/synthetic-speech attack with. These are live, operator-guided scenarios through the exact same challenge-response pipeline as normal voice verification.</p>
+
+      <div class="attack-grid">
+        <div class="panel">
+          <label class="field-label">Target user</label>
+          <select id="voiceAttackUser" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid var(--hairline-2);background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-mono);font-size:13px;margin-bottom:18px;">
+            <option value="">Loading enrolled users…</option>
+          </select>
+
+          <label class="field-label">Scenario</label>
+          <div class="attack-type-row" id="voiceAttackTypeRow">
+            <span style="color:var(--text-faint);font-size:13px;">Loading scenarios…</span>
+          </div>
+          <p id="voiceAttackInstruction" style="font-size:12px;color:var(--text-muted);margin:10px 0 16px;line-height:1.6;"></p>
+
+          <button class="btn" id="voiceAttackRunBtn" onclick="runVoiceAttack()" disabled>Run Voice Attack Attempt</button>
+
+          <div class="verify-status-line" id="voiceAttackStatusLine" style="display:none;margin-top:18px;">
+            <span class="pulse"></span><span id="voiceAttackStatus">Recording…</span>
+          </div>
+
+          <div class="attack-result" id="voiceAttackResult" style="display:none;">
+            <div class="attack-result-badge" id="voiceAttackResultBadge"></div>
+            <div class="attack-result-detail" id="voiceAttackResultDetail"></div>
+          </div>
+
+          <div id="voiceAttackMsg" class="msg"></div>
+        </div>
+
+        <div class="panel">
+          <label class="field-label">What each scenario tests</label>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.9;">
+            <div><b style="color:var(--text-primary);">Correct + correct</b> — control case, expected to pass.</div>
+            <div><b style="color:var(--text-primary);">Correct phrase + wrong speaker</b> — content matches, GMM speaker check should fail.</div>
+            <div><b style="color:var(--text-primary);">Wrong phrase + correct speaker</b> — speaker matches, ASR content check should fail.</div>
+            <div><b style="color:var(--text-primary);">Voice replay</b> — tests the near-duplicate-recording replay heuristic.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- AUDIT LOG ---------- -->
+    <section id="auditlog" class="page">
+      <button class="back" onclick="show('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
+
+      <div class="eyebrow">Compliance &amp; review</div>
+      <h2>Audit Log</h2>
+      <p class="subtitle">A persistent record of real verification decisions — separate from the Attack Lab's log, which is test attempts and intentionally resets on restart. This one survives restarts and answers what a compliance reviewer would actually ask: what did the system decide, for whom, and why.</p>
+
+      <div id="lockoutBanner" class="msg error" style="display:none;margin-bottom:20px;"></div>
+
+      <div class="attack-grid">
+        <div class="panel">
+          <label class="field-label">Scorecard</label>
+          <div class="stat-row" style="margin-top:0;">
+            <div class="stat-chip"><div class="n" id="auditTotal">0</div><div class="l">Total logged (all-time)</div></div>
+            <div class="stat-chip"><div class="n" id="auditGranted">0</div><div class="l">Granted (recent)</div></div>
+            <div class="stat-chip"><div class="n" id="auditDenied">0</div><div class="l">Denied (recent)</div></div>
+            <div class="stat-chip"><div class="n" id="auditIdentitiesLocked">0</div><div class="l">Identities locked out now</div></div>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:16px;line-height:1.6;">
+            Only scored decisions are logged — a technical capture failure (no face detected,
+            camera unavailable) isn't a genuine access decision, so it's excluded. Lockout is
+            two-tier: 5 denials for the <b>same recognized identity</b> within 2 minutes locks
+            out just that identity for 60s (a grant clears it) — someone else can still verify
+            normally in the meantime. 5 <b>unrecognized</b> attempts in the same window trigger a
+            separate, system-wide cooldown, since those can't be tied to any one enrolled person.
+          </p>
+          <a href="/verify/log/export" class="btn secondary" style="display:inline-block;text-decoration:none;text-align:center;margin-top:14px;">Download full CSV</a>
+        </div>
+
+        <div class="panel">
+          <label class="field-label">Recent decisions</label>
+          <div class="attack-log" id="auditLogTable" style="max-height:420px;overflow-y:auto;">
+            <div style="color:var(--text-faint);font-size:12.5px;">No verification attempts logged yet.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- ABOUT ---------- -->
+    <section id="about" class="page">
+      <button class="back" onclick="show('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
+
+      <div class="eyebrow">How it works</div>
+      <h2>About AEGIS·ID</h2>
+      <p class="subtitle">A facial identity system that treats verification as a continuous, risk-weighted decision rather than a single yes/no check.</p>
+
+      <div class="about-grid">
+        <div class="panel">
+          <h3 style="font-family:var(--font-display);font-size:15px;margin-bottom:10px;">Trust score engine</h3>
+          <p class="body-text">Every verification window scores five independent signals — match consistency across frames, recognition confidence, blink/motion-based liveness, texture + frequency-domain + patch-consistency spoof resistance, and image sharpness/exposure — and blends them into one 0–100 trust score.</p>
+        </div>
+        <div class="panel">
+          <h3 style="font-family:var(--font-display);font-size:15px;margin-bottom:10px;">Adaptive authentication</h3>
+          <p class="body-text">High trust grants access immediately. Medium trust triggers a step-up re-scan that requires completing a randomly chosen live challenge — blink twice, turn your head, or nod — as a hard gate, not just a higher score. Low trust, or no confident match, is denied.</p>
+        </div>
+      </div>
+
+      <div class="about-grid">
+        <div class="panel">
+          <h3 style="font-family:var(--font-display);font-size:15px;margin-bottom:10px;">Spoof resistance</h3>
+          <p class="body-text">Three classical computer-vision checks blend into this factor: LBP texture entropy (real skin has richer micro-texture than a print or screen), an FFT-based moiré check (screen replay introduces frequency-domain interference), and a patch-consistency check — splitting the face into a grid and comparing local noise statistics, the same core idea vision transformers use (tokenizing into patches), done with classical statistics instead of a trained model. A full ViT-based deepfake classifier needs pretrained weights and GPU inference — impractical for a dependency-light local app — so this is the honest, feasible approximation rather than a claim of using an actual transformer.</p>
+        </div>
+        <div class="panel">
+          <h3 style="font-family:var(--font-display);font-size:15px;margin-bottom:10px;">Enrollment integrity</h3>
+          <p class="body-text">Verification-time defenses only matter if enrollment itself can't be spoofed. Registering a new user requires completing the same live challenge as step-up, and every captured frame is screened through the spoof-resistance check before it's allowed into the training set — a printed photo or screen held up during enrollment is rejected outright rather than becoming a trusted identity.</p>
+        </div>
+      </div>
+
+      <div class="about-grid">
+        <div class="panel">
+          <h3 style="font-family:var(--font-display);font-size:15px;margin-bottom:10px;">Metadata analysis</h3>
+          <p class="body-text">Checks EXIF data on uploaded files in the Attack Lab — presence of camera Make/Model/timestamp fields, and editing-software tags (Photoshop, GIMP, etc). Deliberately kept separate from the core trust score rather than forced into it: a live webcam frame is a raw pixel array with no file container, so there's genuinely nothing to check on a real live capture. That's the direct answer to "what if the camera is bypassed" — file-based injection is a distinct threat model with its own defense, not something the live pipeline needs to fake a check for.</p>
+        </div>
+        <div class="panel">
+          <h3 style="font-family:var(--font-display);font-size:15px;margin-bottom:10px;">Voice ID — second factor</h3>
+          <p class="body-text">An independent biometric factor alongside the face: classical MFCC + Gaussian Mixture Model speaker verification, trained from scratch on each user's own enrollment recording — no pretrained speaker-embedding model, no internet access needed. Enrollment records two takes of a phrase (one trains the model, one calibrates a per-user reference score); verification records a fresh take and scores it relative to that reference.</p>
+        </div>
+      </div>
+
+      <div class="about-grid">
+        <div class="panel">
+          <h3 style="font-family:var(--font-display);font-size:15px;margin-bottom:10px;">Attack Lab</h3>
+          <p class="body-text">A dedicated page for deliberately testing the verifier against printed photos, phone/screen replay, and video loops — either live on camera, or simulated from an uploaded photo with synthetic degradation applied server-side — using the exact same scoring pipeline as a normal verification, with a running scorecard of attempts blocked.</p>
+        </div>
+        <div class="panel">
+          <h3 style="font-family:var(--font-display);font-size:15px;margin-bottom:10px;">In-browser camera preview</h3>
+          <p class="body-text">Every capture flow streams the live annotated camera feed — the same bounding boxes and labels the native window shows — into a popup inside the web page itself via MJPEG streaming, so the whole experience stays in the browser.</p>
+        </div>
+      </div>
+
+      <p class="body-text">Built for the Smart India Hackathon as a deepfake-resistant alternative to static photo ID checks — recognition alone can be spoofed, but consistency, liveness, spoof resistance, confidence, and (optionally) voice together are much harder to fake, at enrollment as well as at verification.</p>
+
+      <div class="chip-row">
+        <span class="chip">OpenCV · Haar Cascade</span>
+        <span class="chip">LBPH Face Recognizer</span>
+        <span class="chip">Challenge-Response Liveness</span>
+        <span class="chip">LBP Texture Anti-Spoofing</span>
+        <span class="chip">FFT Moiré Detection</span>
+        <span class="chip">Patch-Consistency Analysis</span>
+        <span class="chip">EXIF Metadata Analysis</span>
+        <span class="chip">MFCC + GMM Voice ID</span>
+        <span class="chip">Guarded Enrollment</span>
+        <span class="chip">Flask</span>
+        <span class="chip">Risk-based Adaptive Auth</span>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="camera-modal-backdrop" id="cameraModalBackdrop">
+  <div class="camera-modal">
+    <div class="camera-modal-header">
+      <span class="camera-modal-title" id="cameraModalTitle">Camera preview</span>
+      <span class="camera-modal-live"><span class="pulse"></span>live</span>
+    </div>
+    <img id="cameraStreamImg" class="camera-stream-img" alt="Live camera preview">
+    <div class="camera-modal-caption" id="cameraModalCaption">Waiting for the camera…</div>
+  </div>
+</div>
+
+<script>
+const GAUGE_CIRC = 2 * Math.PI * 80; // r=80
+
+// ============================================================
+// CAMERA PREVIEW POPUP
+// ============================================================
+function openCameraModal(title, caption){
+  document.getElementById("cameraModalTitle").innerText = title || "Camera preview";
+  document.getElementById("cameraModalCaption").innerText = caption || "Waiting for the camera…";
+  const img = document.getElementById("cameraStreamImg");
+  img.src = "/camera/stream?t=" + Date.now(); // cache-bust so a fresh stream connection opens
+  document.getElementById("cameraModalBackdrop").classList.add("show");
+}
+
+function updateCameraModalCaption(caption){
+  document.getElementById("cameraModalCaption").innerText = caption;
+}
+
+function closeCameraModal(){
+  document.getElementById("cameraModalBackdrop").classList.remove("show");
+  // Clearing src is what actually closes the underlying MJPEG connection —
+  // otherwise the browser keeps the stream open indefinitely in the background.
+  document.getElementById("cameraStreamImg").src = "";
+}
+
+function show(id, el){
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  const target = el || document.querySelector(`.nav-item[data-page="${id}"]`);
+  if (target) target.classList.add("active");
+}
+
+async function refreshStatus(){
+  try{
+    const res = await fetch("/status");
+    const data = await res.json();
+    document.getElementById("statUsers").innerText = data.registered_users;
+    document.getElementById("statTrained").innerText = data.model_trained ? "trained" : "not trained";
+    document.getElementById("dotTrained").className = "dot " + (data.model_trained ? "on" : "off");
+  }catch(e){
+    document.getElementById("statTrained").innerText = "offline";
+  }
+}
+refreshStatus();
+
+function runProgress(barId, percentId, containerId, stepMs){
+  const bar = document.getElementById(barId);
+  const percent = document.getElementById(percentId);
+  const container = document.getElementById(containerId);
+  container.classList.add("show");
+  bar.style.width = "0%";
+  percent.innerText = "0%";
+
+  let progress = 0;
+  const timer = setInterval(() => {
+    progress = Math.min(96, progress + 2);
+    bar.style.width = progress + "%";
+    percent.innerText = progress + "%";
+  }, stepMs);
+
+  return {
+    finish(){
+      clearInterval(timer);
+      bar.style.width = "100%";
+      percent.innerText = "100%";
+    }
+  };
+}
+
+function setRegStep(stepId, state){
+  // state: 'active' | 'done' | 'failed' | reset (null)
+  const el = document.getElementById(stepId);
+  if(!el) return;
+  el.classList.remove("active", "done", "failed");
+  if(state) el.classList.add(state);
+}
+
+async function registerUser(){
+  const user = document.getElementById("user").value.trim();
+  if(!user){ alert("Enter a User ID first"); return; }
+
+  const button = document.querySelector("#register .btn");
+  const msg = document.getElementById("regMsg");
+  const voiceMsg = document.getElementById("regVoiceMsg");
+  const challengeResult = document.getElementById("registerChallengeResult");
+  const banner = document.getElementById("registerChallengeBanner");
+  const bannerLabel = document.getElementById("registerChallengeBannerLabel");
+  const instructionEl = document.getElementById("registerChallengeInstruction");
+  msg.classList.remove("show");
+  voiceMsg.classList.remove("show");
+  challengeResult.style.display = "none";
+  document.getElementById("regVoiceStatRow").style.display = "none";
+  setRegStep("regstep-face", null);
+  setRegStep("regstep-voice", null);
+
+  button.disabled = true;
+  button.innerText = "Preparing…";
+  bannerLabel.innerText = "Step 1 of 2 — Face liveness check";
+
+  // ---- Phase 1: face capture with a live liveness challenge ----
+  setRegStep("regstep-face", "active");
+  let challenge;
+  try{
+    const res = await fetch("/register/challenge");
+    challenge = await res.json();
+  }catch(e){
+    button.disabled = false;
+    button.innerText = "Start Registration";
+    setRegStep("regstep-face", "failed");
+    msg.innerText = "Could not fetch a liveness challenge from the server.";
+    msg.className = "msg error show";
+    return;
+  }
+  if(!challenge.ok){
+    button.disabled = false;
+    button.innerText = "Start Registration";
+    setRegStep("regstep-face", "failed");
+    return;
+  }
+
+  banner.style.display = "block";
+  instructionEl.innerText = challenge.instruction;
+  button.innerText = "Get ready…";
+  await new Promise(r => setTimeout(r, 1800));
+
+  button.innerText = "Capturing face…";
+  const progress = runProgress("registerBar", "registerPercent", "registerProgress", 90);
+  openCameraModal("Registering — " + user, challenge.instruction);
+
+  let faceData;
+  try{
+    const res = await fetch("/register/" + encodeURIComponent(user) + "?challenge=" + encodeURIComponent(challenge.challenge));
+    faceData = await res.json();
+  }catch(e){
+    progress.finish();
+    banner.style.display = "none";
+    closeCameraModal();
+    setRegStep("regstep-face", "failed");
+    msg.innerText = "Registration failed — the server sent back something unexpected. Check the terminal running app.py for the real error.";
+    msg.className = "msg error show";
+    button.disabled = false;
+    button.innerText = "Start Registration";
+    return;
+  }
+  progress.finish();
+  banner.style.display = "none";
+  closeCameraModal();
+
+  if(faceData.challenge){
+    challengeResult.style.display = "block";
+    challengeResult.innerHTML = (faceData.challenge_completed
+      ? `<span style="color:var(--cyan)">✓ Challenge "${faceData.challenge_label}" completed.</span>`
+      : `<span style="color:var(--red)">✗ Challenge "${faceData.challenge_label}" not detected.</span>`)
+      + `<div style="color:var(--text-faint);font-size:11.5px;margin-top:4px;">${faceData.challenge_detail || ""}</div>`;
+  }
+  if(faceData.captured !== undefined) document.getElementById("regCaptured").innerText = faceData.captured;
+  if(faceData.rejected_low_spoof !== undefined) document.getElementById("regRejected").innerText = faceData.rejected_low_spoof;
+  if(faceData.avg_spoof_resistance !== undefined) document.getElementById("regSpoof").innerText = faceData.avg_spoof_resistance;
+
+  if(!faceData.ok){
+    setRegStep("regstep-face", "failed");
+    setRegStep("regstep-voice", null);
+    msg.innerText = faceData.error === "camera_unavailable"
+      ? "Could not access the camera."
+      : (faceData.message || "Face registration failed.");
+    msg.className = "msg error show";
+    button.disabled = false;
+    button.innerText = "Start Registration";
+    return;
+  }
+
+  setRegStep("regstep-face", "done");
+  msg.innerText = `Face captured — ${faceData.captured} images accepted` +
+    (faceData.rejected_low_spoof ? `, ${faceData.rejected_low_spoof} rejected for low spoof-resistance.` : ".");
+  msg.className = "msg success show";
+
+  // ---- Phase 2: voice enrollment, automatic, no separate click needed ----
+  let voiceAvailable = true;
+  try{
+    const statusRes = await fetch("/voice/status");
+    const statusData = await statusRes.json();
+    voiceAvailable = !!statusData.available;
+    if(!voiceAvailable){
+      voiceMsg.innerText = "Voice enrollment skipped — " + (statusData.unavailable_reason || "voice recognition isn't available on this server.");
+      voiceMsg.className = "msg info show";
+    }
+  }catch(e){
+    voiceAvailable = false;
+  }
+
+  if(voiceAvailable){
+    setRegStep("regstep-voice", "active");
+    bannerLabel.innerText = "Step 2 of 2 — Voice enrollment";
+    banner.style.display = "block";
+    instructionEl.innerText = "Speak a short phrase — you'll say it twice.";
+    button.innerText = "Recording voice — take 1…";
+    setTimeout(() => { button.innerText = "Recording voice — take 2…"; }, 3800);
+
+    let voiceData;
+    try{
+      const res = await fetch("/voice/enroll/" + encodeURIComponent(user));
+      voiceData = await res.json();
+    }catch(e){
+      voiceData = { ok: false, message: "The server sent back something unexpected during voice enrollment." };
+    }
+    banner.style.display = "none";
+
+    document.getElementById("regVoiceStatRow").style.display = "flex";
+    if(voiceData.ok){
+      setRegStep("regstep-voice", "done");
+      document.getElementById("regVoiceStatus").innerText = "enrolled";
+      document.getElementById("regVoiceLL").innerText = voiceData.self_ll;
+      voiceMsg.innerHTML = `Voice enrolled successfully — this user now has both face and voice factors on record. `
+        + `<a onclick="show('voiceid')" style="color:var(--cyan);cursor:pointer;text-decoration:underline;">Test it on the Voice ID page →</a>`;
+      voiceMsg.className = "msg success show";
+    }else{
+      setRegStep("regstep-voice", "failed");
+      document.getElementById("regVoiceStatus").innerText = "failed";
+      voiceMsg.innerText = "Voice enrollment failed — " + (voiceData.message || "unknown error") +
+        " Face registration is still complete; you can retry voice enrollment alone from the Voice ID page.";
+      voiceMsg.className = "msg error show";
+    }
+  }
+
+  button.disabled = false;
+  button.innerText = "Start Registration";
+  refreshStatus();
+}
+
+async function train(){
+  const button = document.querySelector("#train .btn");
+  const msg = document.getElementById("trainMsg");
+  msg.classList.remove("show");
+
+  button.disabled = true;
+  button.innerText = "Training…";
+
+  const progress = runProgress("trainBar", "trainPercent", "trainProgress", 45);
+
+  try{
+    const res = await fetch("/train");
+    const data = await res.json();
+    progress.finish();
+
+    if(data.ok){
+      msg.innerText = `Model trained on ${data.users} identities, ${data.images} images.`;
+      msg.className = "msg success show";
+      document.getElementById("trainUsers").innerText = data.users;
+      document.getElementById("trainImages").innerText = data.images;
+    }else{
+      msg.innerText = data.error === "no_data"
+        ? "Training failed — register at least one user first."
+        : (data.message || "Training failed.");
+      msg.className = "msg error show";
+    }
+  }catch(e){
+    progress.finish();
+    msg.innerText = "Training failed — the server sent back something unexpected. Check the terminal running app.py for the real error.";
+    msg.className = "msg error show";
+  }
+
+  button.disabled = false;
+  button.innerText = "Train Model";
+  refreshStatus();
+}
+
+function setGauge(score, riskLevel){
+  const arc = document.getElementById("gaugeArc");
+  const offset = GAUGE_CIRC - (Math.max(0, Math.min(100, score)) / 100) * GAUGE_CIRC;
+  arc.style.strokeDashoffset = offset;
+
+  const colors = { low: "#0F8262", medium: "#A5680C", high: "#B23B32" };
+  arc.style.stroke = colors[riskLevel] || "#0F8262";
+
+  document.getElementById("gaugeScore").innerText = score;
+}
+
+function setFactors(factors, prefix){
+  prefix = prefix || "";
+  const labels = ["match_consistency", "recognition_confidence", "liveness", "spoof_resistance", "image_quality", "texture", "moire", "spatial"];
+  labels.forEach(key => {
+    const valEl = document.getElementById(prefix + "fval-" + key);
+    const barEl = document.getElementById(prefix + "fbar-" + key);
+    if(!valEl || !barEl) return;
+    const val = factors[key] ?? 0;
+    valEl.innerText = val;
+    barEl.style.width = Math.max(2, val) + "%";
+  });
+}
+
+function setSteps(stage, failedAt){
+  const order = ["capture", "match", "risk", "decision", "voice"];
+  order.forEach((s, i) => {
+    const el = document.getElementById("step-" + s);
+    if(!el) return;
+    el.classList.remove("done", "active", "failed");
+    if(failedAt && s === failedAt){
+      el.classList.add("failed");
+    }else if(i < stage){
+      el.classList.add("done");
+    }else if(i === stage){
+      el.classList.add("active");
+    }
+  });
+}
+
+function statusFromScore(score, labels){
+  // labels: [passWord, warnWord, failWord] — vocabulary differs per row
+  // (Strong/Weak for match, Passed/Failed for liveness, etc), matching
+  // how a security product names each specific check rather than a
+  // generic "good/bad" everywhere.
+  if(score >= 70) return { cls: "pass", icon: "✓", word: labels[0] };
+  if(score >= 45) return { cls: "warn", icon: "⚠", word: labels[1] };
+  return { cls: "fail", icon: "✗", word: labels[2] };
+}
+
+function setStatusRow(id, score, labels){
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(score === undefined || score === null){
+    el.className = "sr-value pending";
+    el.innerText = "— Pending";
+    return;
+  }
+  const s = statusFromScore(score, labels);
+  el.className = "sr-value " + s.cls;
+  el.innerText = s.icon + " " + s.word;
+}
+
+function setAuthStatusRows(factors){
+  if(!factors || Object.keys(factors).length === 0){
+    ["status-identity","status-liveness","status-spoof","status-quality"].forEach(id => {
+      const el = document.getElementById(id);
+      if(el){ el.className = "sr-value pending"; el.innerText = "— Pending"; }
+    });
+    return;
+  }
+  // Identity match blends the two recognition factors — a person reading
+  // this wants to know "did the face match", not two separate numbers.
+  const identityScore = ((factors.match_consistency ?? 0) + (factors.recognition_confidence ?? 0)) / 2;
+  setStatusRow("status-identity", identityScore, ["Strong", "Moderate", "Weak"]);
+  setStatusRow("status-liveness", factors.liveness, ["Passed", "Partial", "Failed"]);
+  setStatusRow("status-spoof", factors.spoof_resistance, ["Clear", "Review", "Anomaly"]);
+  setStatusRow("status-quality", factors.image_quality, ["Good", "Fair", "Poor"]);
+}
+
+function resetVerifyUI(){
+  setGauge(0, "low");
+  document.getElementById("gaugeArc").style.stroke = "#0F8262";
+  document.getElementById("gaugeScore").innerText = "—";
+  document.getElementById("identityLine").innerText = "";
+  document.getElementById("verifyMsg").classList.remove("show");
+  document.getElementById("challengeResult").style.display = "none";
+  document.getElementById("verifyVoiceResult").style.display = "none";
+  document.getElementById("riskAssessment").style.display = "none";
+  setFactors({});
+  setAuthStatusRows({});
+  setSteps(0);
+}
+
+function applyFaceVisuals(data, isStepUp){
+  setGauge(data.trust_score, data.risk_level);
+  setFactors(data.factors);
+  setAuthStatusRows(data.factors);
+
+  const ra = document.getElementById("riskAssessment");
+  ra.style.display = "block";
+  const tierEl = document.getElementById("riskTierText");
+  const tier = data.risk_tier || data.risk_level || "low";
+  tierEl.innerText = tier.toUpperCase() + " RISK";
+  tierEl.className = "ra-tier " + tier;
+  document.getElementById("riskScoreText").innerText = data.trust_score;
+
+  const decisionBadge = document.getElementById("raDecisionBadge");
+  const decisionLabel = { granted: "✓ Identity verified", step_up: "Step-up in progress", denied: "✗ Access denied" };
+  const decisionCls = { granted: "granted", step_up: "pending", denied: "denied" };
+  decisionBadge.innerText = decisionLabel[data.decision] || data.decision;
+  decisionBadge.className = "ra-decision " + (decisionCls[data.decision] || "pending");
+
+  document.getElementById("identityLine").innerHTML = data.identity
+    ? `Matched <b>${data.identity}</b> · ${data.blinks_detected} blink(s) detected`
+    : `No confident identity match`;
+
+  const challengeResult = document.getElementById("challengeResult");
+  if(data.challenge){
+    challengeResult.style.display = "block";
+    challengeResult.innerHTML = (data.challenge_completed
+      ? `<span style="color:var(--cyan)">✓ Challenge "${data.challenge_label}" completed.</span>`
+      : `<span style="color:var(--red)">✗ Challenge "${data.challenge_label}" not detected.</span>`)
+      + `<div style="color:var(--text-faint);font-size:11.5px;margin-top:4px;">${data.challenge_detail || ""}</div>`;
+  }else{
+    challengeResult.style.display = "none";
+  }
+}
+
+function finalizeVerify(ok, message, downgradeBadge){
+  const msg = document.getElementById("verifyMsg");
+  msg.innerText = message;
+  msg.className = "msg " + (ok ? "success" : "error") + " show";
+  const actions = document.getElementById("verifyActions");
+  actions.innerHTML = '<button class="btn" onclick="verify()">Verify Again</button>';
+  const decisionBadge = document.getElementById("raDecisionBadge");
+  if(downgradeBadge){
+    decisionBadge.innerText = "✗ " + downgradeBadge;
+    decisionBadge.className = "ra-decision denied";
+  }
+}
+
+// Runs the step-up challenge phase (fetch a random challenge, show it, capture
+// against it). Returns the step-up result data, or an {ok:false} object if
+// the challenge couldn't even be fetched. Called automatically by verify()
+// when the first pass lands in the medium-risk band — no manual click needed.
+async function runStepUpPhase(){
+  const banner = document.getElementById("challengeBanner");
+  const instructionEl = document.getElementById("challengeInstruction");
+  const statusLine = document.getElementById("verifyStatusLine");
+  const statusText = document.getElementById("verifyStatus");
+
+  let challenge;
+  try{
+    const res = await fetch("/verify/stepup/challenge");
+    challenge = await res.json();
+  }catch(e){
+    return { ok: false, message: "Could not fetch a step-up challenge from the server." };
+  }
+  if(!challenge.ok) return challenge;
+
+  banner.style.display = "block";
+  instructionEl.innerText = challenge.instruction;
+  statusLine.style.display = "flex";
+  statusText.innerText = "Step-up required — get ready: " + challenge.instruction;
+  await new Promise(r => setTimeout(r, 1800));
+
+  setSteps(0);
+  setTimeout(() => { setSteps(1); statusText.innerText = "Matching against trained identities…"; }, 1200);
+  setTimeout(() => { setSteps(2); statusText.innerText = "Checking the challenge, liveness & spoof signals…"; }, 2600);
+  setTimeout(() => { setSteps(3); statusText.innerText = "Computing trust score…"; }, 4000);
+
+  openCameraModal("Step-up verification", challenge.instruction);
+  let data;
+  try{
+    const res = await fetch("/verify/stepup/run?challenge=" + encodeURIComponent(challenge.challenge));
+    data = await res.json();
+  }catch(e){
+    data = { ok: false, message: "The server sent back something unexpected during step-up." };
+  }
+  statusLine.style.display = "none";
+  banner.style.display = "none";
+  closeCameraModal();
+  return data;
+}
+
+// Runs voice confirmation as an automatic second factor once face (and, if
+// needed, step-up) has already granted access. Returns {attempted:false} if
+// this identity has no voice enrolled — that's a normal, expected outcome,
+// not a failure, and the overall result stays face-only in that case.
+async function runVoicePhase(identity){
+  const el = document.getElementById("step-voice");
+  el.classList.remove("done", "active", "failed");
+  el.classList.add("active");
+
+  const statusLine = document.getElementById("verifyStatusLine");
+  const statusText = document.getElementById("verifyStatus");
+  const voiceResultEl = document.getElementById("verifyVoiceResult");
+
+  // Fetch a fresh random phrase before recording, same "issued at the
+  // moment, never predictable in advance" principle as the visual
+  // challenges — a stale recording of the person saying something else
+  // can't satisfy a phrase it doesn't know is coming.
+  let challenge;
+  try{
+    const res = await fetch("/voice/challenge");
+    challenge = await res.json();
+  }catch(e){
+    challenge = { ok: false };
+  }
+  if(!challenge.ok){
+    el.classList.remove("active");
+    voiceResultEl.style.display = "none";
+    return { attempted: false };
+  }
+
+  statusLine.style.display = "flex";
+  statusText.innerHTML = `Voice check — say: <b style="color:var(--text-primary)">"${challenge.phrase}"</b>`;
+  await new Promise(r => setTimeout(r, 1200));
+
+  let data;
+  try{
+    const res = await fetch("/voice/verify/" + encodeURIComponent(identity) + "?phrase=" + encodeURIComponent(challenge.phrase));
+    data = await res.json();
+  }catch(e){
+    data = { ok: false, error: "unexpected", message: "Voice check failed unexpectedly." };
+  }
+  statusLine.style.display = "none";
+
+  if(data.error === "not_enrolled" || data.error === "voice_unavailable"){
+    el.classList.remove("active");
+    voiceResultEl.style.display = "none";
+    return { attempted: false };
+  }
+  if(!data.ok){
+    el.classList.remove("active"); el.classList.add("failed");
+    voiceResultEl.style.display = "block";
+    voiceResultEl.innerHTML = `<span style="color:var(--red)">✗ Voice check failed — ${data.message || "unknown error"}</span>`;
+    return { attempted: true, ok: false, message: data.message };
+  }
+
+  const passed = data.decision === "match";
+  el.classList.remove("active");
+  el.classList.add(passed ? "done" : "failed");
+  voiceResultEl.style.display = "block";
+  let detailLine = "";
+  if(data.content_checked === false){
+    detailLine = `<div style="color:var(--text-faint);font-size:11px;margin-top:4px;">(Phrase content not checked — speech-recognition model unavailable.)</div>`;
+  }else if(data.phrase_expected !== undefined){
+    detailLine = `<div style="color:var(--text-faint);font-size:11px;margin-top:4px;">Phrase "${data.phrase_expected}" — heard "${data.transcript || "(nothing)"}" ${data.content_passed ? "✓" : "✗"}</div>`;
+  }
+  if(data.replay_flags && data.replay_flags.likely_replay){
+    detailLine += `<div style="color:var(--red);font-size:11px;margin-top:2px;">⚠ Possible replay detected.</div>`;
+  }
+  voiceResultEl.innerHTML = (passed
+    ? `<span style="color:var(--cyan)">✓ Voice confirmed (score ${data.voice_score}).</span>`
+    : `<span style="color:var(--red)">✗ Voice did not match (score ${data.voice_score}).</span>`)
+    + detailLine;
+  return { attempted: true, ok: true, decision: data.decision, voice_score: data.voice_score };
+}
+
+// Single entry point for the whole verification flow: face capture, then
+// automatically a step-up challenge if the trust score lands in the medium
+// band, then automatically a voice confirmation if this identity has voice
+// enrolled — one continuous sequence from one button, ending in one combined
+// decision, instead of separate manual steps across separate pages.
+async function verify(){
+  const statusLine = document.getElementById("verifyStatusLine");
+  const statusText = document.getElementById("verifyStatus");
+
+  document.querySelectorAll("#verifyActions .btn").forEach(b => b.disabled = true);
+  document.getElementById("challengeBanner").style.display = "none";
+
+  resetVerifyUI();
+  statusLine.style.display = "flex";
+  statusText.innerText = "Scanning for face…";
+  setSteps(0);
+
+  setTimeout(() => { setSteps(1); statusText.innerText = "Matching against trained identities…"; }, 900);
+  setTimeout(() => { setSteps(2); statusText.innerText = "Checking liveness, quality & spoof signals…"; }, 1900);
+  setTimeout(() => { setSteps(3); statusText.innerText = "Computing trust score…"; }, 2900);
+
+  openCameraModal("Verifying identity", "Look at the camera…");
+
+  let data;
+  try{
+    const res = await fetch("/verify");
+    data = await res.json();
+  }catch(e){
+    data = { ok: false, message: "The server sent back something unexpected. Check the terminal running app.py for the real error." };
+  }
+  statusLine.style.display = "none";
+  closeCameraModal();
+
+  if(!data.ok){
+    setSteps(0, "capture");
+    document.getElementById("riskAssessment").style.display = "block";
+    if(data.error === "locked_out"){
+      document.getElementById("riskTierText").innerText = "LOCKED OUT";
+      document.getElementById("riskTierText").className = "ra-tier high";
+      finalizeVerify(false, data.message, "temporarily locked out");
+    }else{
+      document.getElementById("riskTierText").innerText = "ERROR";
+      document.getElementById("riskTierText").className = "ra-tier high";
+      finalizeVerify(false, data.message || "Verification failed.", "error");
+    }
+    document.querySelectorAll("#verifyActions .btn").forEach(b => b.disabled = false);
+    return;
+  }
+
+  applyFaceVisuals(data, false);
+  let isStepUp = false;
+
+  if(data.decision === "step_up"){
+    await new Promise(r => setTimeout(r, 500));
+    const stepData = await runStepUpPhase();
+    isStepUp = true;
+    if(!stepData.ok){
+      setSteps(0, "capture");
+      finalizeVerify(false, stepData.message || "Step-up verification failed.");
+      document.querySelectorAll("#verifyActions .btn").forEach(b => b.disabled = false);
+      return;
+    }
+    applyFaceVisuals(stepData, true);
+    data = stepData;
+  }
+
+  setSteps(4, data.decision === "denied" ? "decision" : null);
+
+  if(data.decision !== "granted"){
+    let denyMsg;
+    if(data.lockout_message){
+      denyMsg = data.lockout_message;
+    }else if(isStepUp && data.challenge && !data.challenge_completed){
+      denyMsg = `Step-up denied — the "${data.challenge_label}" challenge wasn't detected. This is a hard gate: even a high trust score doesn't grant access without completing the requested action.`;
+    }else{
+      denyMsg = isStepUp
+        ? "Step-up verification did not clear the required trust threshold — access denied."
+        : "Trust score is too low — access denied.";
+    }
+    if(data.sample_reliable === false){
+      denyMsg += " Fewer face frames were captured than usual — move closer to the camera or improve lighting for a more consistent score.";
+    }
+    if(data.camera_quality_note){
+      denyMsg += " " + data.camera_quality_note;
+    }
+    finalizeVerify(false, denyMsg);
+    document.querySelectorAll("#verifyActions .btn").forEach(b => b.disabled = false);
+    return;
+  }
+
+  // data.decision === "granted" here — either a clean first pass, or a
+  // step-up that cleared its (higher) bar. What happens next depends on
+  // the risk tier, not just the binary decision: LOW and MEDIUM tiers
+  // don't need a second factor at all (that's the whole point of the
+  // tiering — requirements should scale with actual risk, not apply the
+  // same extra checks to every grant regardless of how clean it was).
+  // Only the HIGH tier (step-up that specifically triggered the
+  // spoof-resistance veto, or stayed borderline even after the harder
+  // step-up capture) makes voice confirmation mandatory — and if it's not
+  // available for this user, that's a fail-closed deny, not a silent
+  // downgrade to face-only.
+  const tier = data.risk_tier || "low";
+  const faceNote = isStepUp ? "Step-up verification passed." : "Trust score cleared the threshold on the first pass.";
+
+  if(tier !== "high"){
+    setSteps(5);
+    let finalMsg = `${faceNote} Access granted.`;
+    if(data.sample_reliable === false){
+      finalMsg += " Fewer face frames were captured than usual — move closer to the camera or improve lighting for a more consistent score.";
+    }
+    if(data.camera_quality_note){
+      finalMsg += " " + data.camera_quality_note;
+    }
+    finalizeVerify(true, finalMsg);
+    document.querySelectorAll("#verifyActions .btn").forEach(b => b.disabled = false);
+    return;
+  }
+
+  // HIGH tier: voice is mandatory, not a bonus.
+  let voiceResult = { attempted: false };
+  if(data.identity){
+    voiceResult = await runVoicePhase(data.identity);
+  }
+
+  let overallOk, finalMsg;
+  const elevatedNote = `${faceNote} Signals still indicate elevated risk, so voice confirmation is required.`;
+  if(!voiceResult.attempted){
+    overallOk = false;
+    finalMsg = `${elevatedNote} No voice is enrolled for this user — access denied. Enroll voice on the Voice ID page to allow this user to clear high-risk verification.`;
+  }else if(voiceResult.ok && voiceResult.decision === "match"){
+    setSteps(5);
+    overallOk = true;
+    finalMsg = `${elevatedNote} Voice confirmed (score ${voiceResult.voice_score}) — access granted with both factors verified.`;
+  }else{
+    overallOk = false;
+    finalMsg = voiceResult.ok
+      ? `${elevatedNote} Voice did not match (score ${voiceResult.voice_score}) — access denied.`
+      : `${elevatedNote} Voice check failed — ${voiceResult.message || "unknown error"}. Access denied.`;
+  }
+
+  if(data.sample_reliable === false){
+    finalMsg += " Fewer face frames were captured than usual — move closer to the camera or improve lighting for a more consistent score.";
+  }
+  if(data.camera_quality_note){
+    finalMsg += " " + data.camera_quality_note;
+  }
+
+  finalizeVerify(overallOk, finalMsg, overallOk ? null : "high risk — voice required");
+  document.querySelectorAll("#verifyActions .btn").forEach(b => b.disabled = false);
+}
+
+// ============================================================
+// ATTACK LAB
+// ============================================================
+let selectedAttackType = null;
+
+async function loadAttackTypes(){
+  const row = document.getElementById("attackTypeRow");
+  try{
+    const res = await fetch("/attack/types");
+    const data = await res.json();
+    if(!data.ok || !data.types.length){
+      row.innerHTML = '<span style="color:var(--text-faint);font-size:13px;">No attack types available.</span>';
+      return;
+    }
+    row.innerHTML = "";
+    data.types.forEach((t, i) => {
+      const btn = document.createElement("button");
+      btn.className = "attack-type-btn";
+      btn.innerText = t.label;
+      btn.onclick = () => selectAttackType(t.id, btn);
+      row.appendChild(btn);
+      if(i === 0) selectAttackType(t.id, btn);
+    });
+  }catch(e){
+    row.innerHTML = '<span style="color:var(--text-faint);font-size:13px;">Could not load attack types.</span>';
+  }
+}
+
+function updateSimButtonState(){
+  const fileInput = document.getElementById("attackFileInput");
+  const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+  const sourceSelect = document.getElementById("attackSourceUser");
+  const hasSource = sourceSelect && sourceSelect.value;
+  document.getElementById("attackSimBtn").disabled = !selectedAttackType || !(hasFile || hasSource);
+}
+
+async function loadAttackSourceUsers(){
+  const select = document.getElementById("attackSourceUser");
+  try{
+    const res = await fetch("/status");
+    const data = await res.json();
+    const users = data.users || [];
+    if(users.length){
+      select.innerHTML = '<option value="">— none, upload instead —</option>'
+        + users.map(u => `<option value="${u}">${u}</option>`).join("");
+      select.selectedIndex = 1;
+    }else{
+      select.innerHTML = '<option value="">No enrolled users yet — register one first</option>';
+    }
+  }catch(e){
+    select.innerHTML = '<option value="">Could not load enrolled users</option>';
+  }
+  updateSimButtonState();
+}
+
+function selectAttackType(id, btnEl){
+  selectedAttackType = id;
+  document.querySelectorAll(".attack-type-btn").forEach(b => b.classList.remove("selected"));
+  if(btnEl) btnEl.classList.add("selected");
+  document.getElementById("attackRunBtn").disabled = false;
+  updateSimButtonState();
+}
+
+function setAttackMode(mode){
+  const isLive = mode === "live";
+  document.getElementById("modeLiveBtn").classList.toggle("selected", isLive);
+  document.getElementById("modeSimBtn").classList.toggle("selected", !isLive);
+  document.getElementById("liveModePanel").style.display = isLive ? "block" : "none";
+  document.getElementById("simModePanel").style.display = isLive ? "none" : "block";
+  document.getElementById("attackResult").style.display = "none";
+  document.getElementById("attackMsg").classList.remove("show");
+}
+
+document.addEventListener("change", (e) => {
+  if(e.target && (e.target.id === "attackFileInput" || e.target.id === "attackSourceUser")){
+    updateSimButtonState();
+  }
+});
+
+function renderAttackScorecard(summary){
+  document.getElementById("attackTotal").innerText = summary.total_attempts;
+  document.getElementById("attackBlocked").innerText = summary.blocked;
+  document.getElementById("attackRate").innerText = summary.block_rate === null ? "—" : summary.block_rate + "%";
+}
+
+function renderAttackLogList(recent){
+  const el = document.getElementById("attackLog");
+  if(!recent || !recent.length){
+    el.innerHTML = '<div style="color:var(--text-faint);font-size:12.5px;">No attempts yet.</div>';
+    return;
+  }
+  el.innerHTML = recent.map(entry => {
+    const time = new Date(entry.timestamp * 1000).toLocaleTimeString();
+    const status = entry.blocked
+      ? '<span style="color:var(--cyan)">blocked</span>'
+      : '<span style="color:var(--red)">got through</span>';
+    const score = entry.trust_score === null || entry.trust_score === undefined ? "—" : entry.trust_score;
+    const modeTag = entry.simulated ? '<span style="color:var(--violet);font-size:10px;">SIM</span> ' : '';
+    return `<div class="attack-log-row">
+      <span class="attack-log-type">${modeTag}${entry.attack_label}</span>
+      <span class="attack-log-score">score ${score}</span>
+      <span class="attack-log-status">${status}</span>
+      <span class="attack-log-time">${time}</span>
+    </div>`;
+  }).join("");
+}
+
+async function refreshAttackLog(){
+  try{
+    const res = await fetch("/attack/log");
+    const data = await res.json();
+    if(data.ok){
+      renderAttackScorecard(data.summary);
+      renderAttackLogList(data.recent);
+    }
+  }catch(e){ /* non-critical */ }
+}
+
+function renderAttackOutcome(data){
+  const resultBox = document.getElementById("attackResult");
+  const msg = document.getElementById("attackMsg");
+
+  if(!data.ok){
+    msg.innerText = data.message || "Attack attempt failed to run.";
+    msg.className = "msg error show";
+    return;
+  }
+
+  resultBox.style.display = "block";
+  const badge = document.getElementById("attackResultBadge");
+  const detail = document.getElementById("attackResultDetail");
+  const simTag = data.source_label ? ` (simulated from ${data.source_label})` : (data.simulated ? " (simulated)" : " (live demonstration)");
+  if(data.blocked){
+    badge.innerHTML = '<span style="color:#3ECF8E">✓ Blocked</span>';
+    detail.innerText = `The attack did not pass${simTag}.`;
+  }else{
+    badge.innerHTML = '<span style="color:#F0665C">✗ Got through</span>';
+    detail.innerText = `The attack was scored as a valid match${simTag}.`;
+  }
+  setFactors(data.factors || {}, "a");
+
+  document.getElementById("afTrustScore").innerText = data.trust_score ?? "—";
+  const tierEl = document.getElementById("afRiskTier");
+  tierEl.innerText = (data.risk_tier || "—").toString().toUpperCase();
+  const decisionEl = document.getElementById("afDecision");
+  decisionEl.innerText = (data.decision || "—").toString().toUpperCase();
+  decisionEl.className = "v " + (data.blocked ? "blocked" : "passed");
+
+  const metaBox = document.getElementById("attackMetadataLine");
+  if(data.metadata_confidence !== undefined && data.metadata_confidence !== null){
+    metaBox.style.display = "block";
+    metaBox.innerHTML = `<b>Metadata analysis (${data.metadata_confidence}/100):</b> ${data.metadata_detail || ""}`;
+  }else if(data.metadata_detail){
+    metaBox.style.display = "block";
+    metaBox.innerHTML = `<b>Metadata analysis:</b> ${data.metadata_detail}`;
+  }else{
+    metaBox.style.display = "none";
+  }
+
+  if(data.log_summary) renderAttackScorecard(data.log_summary);
+}
+
+async function runAttack(){
+  if(!selectedAttackType) return;
+  const btn = document.getElementById("attackRunBtn");
+  const statusLine = document.getElementById("attackStatusLine");
+  const statusText = document.getElementById("attackStatus");
+  const resultBox = document.getElementById("attackResult");
+  const msg = document.getElementById("attackMsg");
+
+  btn.disabled = true;
+  btn.innerText = "Running attempt…";
+  msg.classList.remove("show");
+  resultBox.style.display = "none";
+  statusLine.style.display = "flex";
+  statusText.innerText = "Present the attack to the camera now…";
+  openCameraModal("Attack Lab — live attempt", "Present the attack to the camera now…");
+
+  try{
+    const res = await fetch("/attack/run?attack_type=" + encodeURIComponent(selectedAttackType));
+    const data = await res.json();
+    statusLine.style.display = "none";
+    closeCameraModal();
+    renderAttackOutcome(data);
+  }catch(e){
+    statusLine.style.display = "none";
+    closeCameraModal();
+    msg.innerText = "The server sent back something unexpected. Check the terminal running app.py for the real error.";
+    msg.className = "msg error show";
+  }
+
+  btn.disabled = false;
+  btn.innerText = "Run Attack Attempt";
+  refreshAttackLog();
+}
+
+async function runSimulatedAttack(isVariant){
+  if(!selectedAttackType) return;
+  const fileInput = document.getElementById("attackFileInput");
+  const sourceSelect = document.getElementById("attackSourceUser");
+  const hasFile = fileInput.files && fileInput.files.length > 0;
+  const sourceUser = sourceSelect.value;
+  if(!hasFile && !sourceUser) return;
+
+  const btn = document.getElementById("attackSimBtn");
+  const variantBtn = document.getElementById("attackVariantBtn");
+  const resultBox = document.getElementById("attackResult");
+  const msg = document.getElementById("attackMsg");
+
+  const activeBtn = isVariant ? variantBtn : btn;
+  activeBtn.disabled = true;
+  activeBtn.innerText = isVariant ? "Generating…" : "Processing…";
+  msg.classList.remove("show");
+  if(!isVariant) resultBox.style.display = "none";
+
+  const form = new FormData();
+  form.append("attack_type", selectedAttackType);
+  if(hasFile){
+    form.append("image", fileInput.files[0]);
+  }else{
+    form.append("source_user", sourceUser);
+  }
+
+  try{
+    const res = await fetch("/attack/simulate", { method: "POST", body: form });
+    const data = await res.json();
+    renderAttackOutcome(data);
+    // Offer "Generate New Variant" only for the self-contained (source_user)
+    // path -- re-running an uploaded file would need the file re-selected,
+    // so that path just re-uses the normal Run button.
+    variantBtn.style.display = (sourceUser && !hasFile && data.ok !== false) ? "inline-block" : "none";
+  }catch(e){
+    msg.innerText = "The server sent back something unexpected. Check the terminal running app.py for the real error.";
+    msg.className = "msg error show";
+  }
+
+  btn.disabled = false;
+  btn.innerText = "Run Simulated Attack";
+  variantBtn.disabled = false;
+  variantBtn.innerText = "Generate New Variant";
+  refreshAttackLog();
+}
+
+// ============================================================
+// VOICE ID
+// ============================================================
+let voiceMode = "enroll";
+
+function setVoiceMode(mode){
+  voiceMode = mode;
+  document.getElementById("voiceModeEnroll").classList.toggle("selected", mode === "enroll");
+  document.getElementById("voiceModeVerify").classList.toggle("selected", mode === "verify");
+  document.getElementById("voiceEnrollPanel").style.display = mode === "enroll" ? "block" : "none";
+  document.getElementById("voiceVerifyPanel").style.display = mode === "verify" ? "block" : "none";
+}
+
+async function loadVoiceStatus(){
+  let enrolledUsers = [];
+  try{
+    const res = await fetch("/voice/status");
+    const data = await res.json();
+    const warn = document.getElementById("voiceUnavailableMsg");
+    if(!data.available){
+      warn.style.display = "block";
+      warn.classList.add("show");
+      warn.innerText = data.unavailable_reason || "Voice recognition is unavailable on this server.";
+    }else if(!data.asr_available){
+      warn.style.display = "block";
+      warn.classList.add("show");
+      warn.className = "msg info show";
+      warn.innerText = "Speaker verification is working, but phrase-content checking is off: "
+        + (data.asr_unavailable_reason || "the speech-recognition model isn't loaded.")
+        + " Voice checks will still run, just without verifying what was said.";
+    }else{
+      warn.style.display = "none";
+    }
+    enrolledUsers = data.enrolled_users || [];
+    const list = document.getElementById("voiceEnrolledList");
+    if(enrolledUsers.length){
+      list.innerHTML = enrolledUsers.map(u =>
+        `<div class="attack-log-row"><span class="attack-log-type">${u}</span></div>`
+      ).join("");
+    }else{
+      list.innerHTML = '<div style="color:var(--text-faint);font-size:12.5px;">None yet.</div>';
+    }
+  }catch(e){ /* non-critical */ }
+
+  // Populate the User dropdown from everyone registered (not just voice-
+  // enrolled) -- this is the direct fix for "voice enrolled during
+  // registration doesn't show up here": the same registered identities
+  // from the Register page are what this dropdown lists, with a live
+  // status line showing whether THIS specific user already has voice on
+  // file, making the connection between the two pages explicit instead of
+  // implicit.
+  const select = document.getElementById("voiceUser");
+  try{
+    const statusRes = await fetch("/status");
+    const statusData = await statusRes.json();
+    const allUsers = statusData.users || [];
+    if(allUsers.length){
+      const prevValue = select.value;
+      select.innerHTML = allUsers.map(u => `<option value="${u}">${u}</option>`).join("");
+      if(allUsers.includes(prevValue)) select.value = prevValue;
+    }else{
+      select.innerHTML = '<option value="">No registered users yet — register one first</option>';
+    }
+  }catch(e){
+    select.innerHTML = '<option value="">Could not load registered users</option>';
+  }
+  updateVoiceUserStatus(enrolledUsers);
+}
+
+function updateVoiceUserStatus(enrolledUsers){
+  const select = document.getElementById("voiceUser");
+  const statusEl = document.getElementById("voiceUserStatus");
+  if(!select.value){
+    statusEl.innerText = "";
+    return;
+  }
+  const isEnrolled = (enrolledUsers || []).includes(select.value);
+  statusEl.innerHTML = isEnrolled
+    ? '<span style="color:var(--cyan)">✓ Voice already enrolled for this user</span>'
+    : '<span style="color:var(--amber)">Not yet enrolled — enroll below to add voice for this user</span>';
+}
+
+document.addEventListener("change", (e) => {
+  if(e.target && e.target.id === "voiceUser"){
+    fetch("/voice/status").then(r => r.json()).then(d => updateVoiceUserStatus(d.enrolled_users || [])).catch(() => {});
+  }
+});
+
+function renderVoiceResult(data){
+  const empty = document.getElementById("voiceResultEmpty");
+  const box = document.getElementById("voiceResultBox");
+  const msg = document.getElementById("voiceMsg");
+  const detail = document.getElementById("voiceChallengeDetail");
+
+  if(!data.ok){
+    msg.innerText = data.message || "Voice check failed.";
+    msg.className = "msg error show";
+    return;
+  }
+  msg.classList.remove("show");
+  empty.style.display = "none";
+  box.style.display = "block";
+
+  if(data.decision){
+    const badge = document.getElementById("voiceResultBadge");
+    badge.innerText = data.decision === "match" ? "voice match" : "no match";
+    badge.className = "risk-badge " + (data.decision === "match" ? "low" : "high");
+    document.getElementById("voiceScoreStat").innerText = data.voice_score;
+    document.getElementById("voiceSelfLLStat").innerText = data.self_ll;
+
+    if(data.phrase_expected !== undefined){
+      detail.style.display = "block";
+      const speakerLine = `<b>Speaker:</b> ${data.speaker_passed ? "✓ matched" : "✗ did not match"}`;
+      let contentLine;
+      if(!data.content_checked){
+        contentLine = `<b>Phrase:</b> not checked (speech-recognition model unavailable)`;
+      }else{
+        contentLine = `<b>Phrase:</b> expected "${data.phrase_expected}", heard "${data.transcript || "(nothing)"}" — `
+          + (data.content_passed ? "✓ matched" : "✗ did not match");
+      }
+      let replayLine = "";
+      if(data.replay_flags && data.replay_flags.likely_replay){
+        replayLine = `<div style="color:var(--red);margin-top:4px;">⚠ Possible replay detected — this recording closely matches a recent previous attempt.</div>`;
+      }
+      detail.innerHTML = speakerLine + "<br>" + contentLine + replayLine;
+    }else{
+      detail.style.display = "none";
+    }
+  }else{
+    detail.style.display = "none";
+    msg.innerText = `Enrollment complete. Reference log-likelihood: ${data.self_ll}.`;
+    msg.className = "msg success show";
+  }
+  loadVoiceStatus();
+}
+
+async function enrollVoice(){
+  const user = document.getElementById("voiceUser").value.trim();
+  if(!user){ alert("Enter a User ID first"); return; }
+
+  const statusLine = document.getElementById("voiceStatusLine");
+  const statusText = document.getElementById("voiceStatusText");
+  document.getElementById("voiceMsg").classList.remove("show");
+  statusLine.style.display = "flex";
+  statusText.innerText = "Recording take 1 — speak your phrase…";
+  setTimeout(() => { statusText.innerText = "Recording take 2 — speak the same phrase again…"; }, 3800);
+
+  try{
+    const res = await fetch("/voice/enroll/" + encodeURIComponent(user));
+    const data = await res.json();
+    statusLine.style.display = "none";
+    renderVoiceResult(data);
+  }catch(e){
+    statusLine.style.display = "none";
+    const msg = document.getElementById("voiceMsg");
+    msg.innerText = "The server sent back something unexpected. Check the terminal running app.py for the real error.";
+    msg.className = "msg error show";
+  }
+}
+
+async function verifyVoice(){
+  const user = document.getElementById("voiceUser").value.trim();
+  if(!user){ alert("Enter a User ID first"); return; }
+
+  const statusLine = document.getElementById("voiceStatusLine");
+  const statusText = document.getElementById("voiceStatusText");
+  document.getElementById("voiceMsg").classList.remove("show");
+
+  let challenge;
+  try{
+    const res = await fetch("/voice/challenge");
+    challenge = await res.json();
+  }catch(e){
+    const msg = document.getElementById("voiceMsg");
+    msg.innerText = "Could not fetch a voice challenge phrase from the server.";
+    msg.className = "msg error show";
+    return;
+  }
+
+  statusLine.style.display = "flex";
+  statusText.innerHTML = `Say: <b style="color:var(--text-primary)">"${challenge.phrase}"</b>`;
+  await new Promise(r => setTimeout(r, 1200));
+  statusText.innerHTML = `Recording — say: <b style="color:var(--text-primary)">"${challenge.phrase}"</b>`;
+
+  try{
+    const res = await fetch("/voice/verify/" + encodeURIComponent(user) + "?phrase=" + encodeURIComponent(challenge.phrase));
+    const data = await res.json();
+    statusLine.style.display = "none";
+    renderVoiceResult(data);
+  }catch(e){
+    statusLine.style.display = "none";
+    const msg = document.getElementById("voiceMsg");
+    msg.innerText = "The server sent back something unexpected. Check the terminal running app.py for the real error.";
+    msg.className = "msg error show";
+  }
+}
+
+// ============================================================
+// ATTACK LAB — VOICE ATTACKS
+// ============================================================
+let selectedVoiceAttackScenario = null;
+
+async function loadVoiceAttackTypes(){
+  const row = document.getElementById("voiceAttackTypeRow");
+  const userSelect = document.getElementById("voiceAttackUser");
+  try{
+    const res = await fetch("/attack/voice/types");
+    const data = await res.json();
+    if(!data.ok){
+      row.innerHTML = '<span style="color:var(--text-faint);font-size:13px;">Could not load voice attack scenarios.</span>';
+      return;
+    }
+
+    if(data.enrolled_users && data.enrolled_users.length){
+      userSelect.innerHTML = data.enrolled_users.map(u => `<option value="${u}">${u}</option>`).join("");
+    }else{
+      userSelect.innerHTML = '<option value="">No users have voice enrolled</option>';
+    }
+
+    row.innerHTML = "";
+    data.types.forEach((t, i) => {
+      const btn = document.createElement("button");
+      btn.className = "attack-type-btn";
+      btn.innerText = t.label;
+      btn.onclick = () => selectVoiceAttackScenario(t.id, t.instruction, btn);
+      row.appendChild(btn);
+      if(i === 0) selectVoiceAttackScenario(t.id, t.instruction, btn);
+    });
+  }catch(e){
+    row.innerHTML = '<span style="color:var(--text-faint);font-size:13px;">Could not load voice attack scenarios.</span>';
+  }
+}
+
+function selectVoiceAttackScenario(id, instruction, btnEl){
+  selectedVoiceAttackScenario = id;
+  document.querySelectorAll("#voiceAttackTypeRow .attack-type-btn").forEach(b => b.classList.remove("selected"));
+  if(btnEl) btnEl.classList.add("selected");
+  document.getElementById("voiceAttackInstruction").innerText = instruction || "";
+  const userSelect = document.getElementById("voiceAttackUser");
+  document.getElementById("voiceAttackRunBtn").disabled = !userSelect.value;
+}
+
+document.addEventListener("change", (e) => {
+  if(e.target && e.target.id === "voiceAttackUser"){
+    document.getElementById("voiceAttackRunBtn").disabled = !e.target.value || !selectedVoiceAttackScenario;
+  }
+});
+
+async function runVoiceAttack(){
+  const user = document.getElementById("voiceAttackUser").value;
+  if(!user || !selectedVoiceAttackScenario) return;
+
+  const btn = document.getElementById("voiceAttackRunBtn");
+  const statusLine = document.getElementById("voiceAttackStatusLine");
+  const statusText = document.getElementById("voiceAttackStatus");
+  const resultBox = document.getElementById("voiceAttackResult");
+  const msg = document.getElementById("voiceAttackMsg");
+
+  btn.disabled = true;
+  btn.innerText = "Running…";
+  msg.classList.remove("show");
+  resultBox.style.display = "none";
+
+  // Fetch and DISPLAY the phrase before recording -- same two-step
+  // "reveal, then record" pattern as the main verify flow and the
+  // standalone Voice ID page. The earlier version generated the phrase
+  // server-side and started recording in the same call, which meant
+  // whoever was speaking never actually saw what to say — fine for the
+  // scenarios that intentionally say the wrong thing, not fine for the
+  // ones that need the correct phrase read aloud.
+  let challenge;
+  try{
+    const res = await fetch("/voice/challenge");
+    challenge = await res.json();
+  }catch(e){
+    challenge = { ok: false };
+  }
+  if(!challenge.ok){
+    msg.innerText = "Could not fetch a voice challenge phrase from the server.";
+    msg.className = "msg error show";
+    btn.disabled = false;
+    btn.innerText = "Run Voice Attack Attempt";
+    return;
+  }
+
+  statusLine.style.display = "flex";
+  const needsCorrectPhrase = selectedVoiceAttackScenario === "correct_phrase_correct_speaker"
+    || selectedVoiceAttackScenario === "correct_phrase_wrong_speaker";
+  statusText.innerHTML = needsCorrectPhrase
+    ? `Say: <b style="color:var(--text-primary)">"${challenge.phrase}"</b>`
+    : `Follow the scenario instruction above (target phrase, for reference: "${challenge.phrase}")`;
+  await new Promise(r => setTimeout(r, 1400));
+  statusText.innerText = "Recording…";
+
+  try{
+    const res = await fetch("/attack/voice/run?user=" + encodeURIComponent(user)
+      + "&scenario=" + encodeURIComponent(selectedVoiceAttackScenario)
+      + "&phrase=" + encodeURIComponent(challenge.phrase));
+    const data = await res.json();
+    statusLine.style.display = "none";
+
+    if(!data.ok){
+      msg.innerText = data.message || "Voice attack attempt failed to run.";
+      msg.className = "msg error show";
+    }else{
+      resultBox.style.display = "block";
+      const badge = document.getElementById("voiceAttackResultBadge");
+      const detail = document.getElementById("voiceAttackResultDetail");
+      if(data.blocked){
+        badge.innerHTML = '<span style="color:#3ECF8E">✓ Blocked</span>';
+      }else{
+        badge.innerHTML = '<span style="color:#F0665C">✗ Got through</span>';
+      }
+      let lines = [`Scenario: ${data.scenario_label}`];
+      lines.push(`Speaker: ${data.speaker_passed ? "✓ matched" : "✗ did not match"}`);
+      if(data.content_checked === false){
+        lines.push("Phrase: not checked (speech-recognition model unavailable)");
+      }else if(data.phrase_expected !== undefined){
+        lines.push(`Phrase: expected "${data.phrase_expected}", heard "${data.transcript || "(nothing)"}" — ${data.content_passed ? "✓ matched" : "✗ did not match"}`);
+      }
+      if(data.replay_flags && data.replay_flags.likely_replay){
+        lines.push("⚠ Possible replay detected");
+      }
+      lines.push(`Voice score: ${data.voice_score} — decision: ${(data.decision || "—").toUpperCase()}`);
+      detail.innerHTML = lines.join("<br>");
+      if(data.log_summary) renderAttackScorecard(data.log_summary);
+    }
+  }catch(e){
+    statusLine.style.display = "none";
+    msg.innerText = "The server sent back something unexpected. Check the terminal running app.py for the real error.";
+    msg.className = "msg error show";
+  }
+
+  btn.disabled = false;
+  btn.innerText = "Run Voice Attack Attempt";
+  refreshAttackLog();
+}
+
+// ============================================================
+// AUDIT LOG
+// ============================================================
+function formatAuditTime(ts){
+  const d = new Date(ts * 1000);
+  return d.toLocaleString();
+}
+
+async function loadAuditLog(){
+  try{
+    const res = await fetch("/verify/log?limit=50");
+    const data = await res.json();
+    if(!data.ok) return;
+
+    document.getElementById("auditTotal").innerText = data.total_logged;
+    document.getElementById("auditGranted").innerText = data.recent_granted;
+    document.getElementById("auditDenied").innerText = data.recent_denied;
+    document.getElementById("auditIdentitiesLocked").innerText = data.identities_currently_locked_out ?? 0;
+
+    const banner = document.getElementById("lockoutBanner");
+    if(data.locked_out){
+      banner.style.display = "block";
+      banner.innerText = `System-wide lockout active — too many unrecognized attempts. ${Math.ceil(data.lockout_seconds_remaining)}s remaining. (This is the global/unmatched-attempt cooldown; per-identity lockouts don't block other users and aren't shown here.)`;
+    }else{
+      banner.style.display = "none";
+    }
+
+    const table = document.getElementById("auditLogTable");
+    if(data.recent && data.recent.length){
+      table.innerHTML = data.recent.map(e => {
+        const decisionColor = e.decision === "granted" ? "var(--cyan)" : (e.decision === "denied" ? "var(--red)" : "var(--amber)");
+        const identity = e.identity || "(no match)";
+        return `<div class="attack-log-row" style="justify-content:space-between;">
+          <div>
+            <span class="attack-log-type">${identity}</span>
+            <span style="color:var(--text-faint);font-size:11px;margin-left:8px;">${formatAuditTime(e.timestamp)} · ${e.stage === "step_up" ? "step-up" : "first pass"}</span>
+          </div>
+          <div style="text-align:right;">
+            <span style="color:${decisionColor};font-family:var(--font-mono);font-weight:600;font-size:12px;">${(e.decision || "—").toUpperCase()}</span>
+            <span style="color:var(--text-faint);font-size:11px;margin-left:8px;">trust ${e.trust_score}</span>
+          </div>
+        </div>`;
+      }).join("");
+    }else{
+      table.innerHTML = '<div style="color:var(--text-faint);font-size:12.5px;">No verification attempts logged yet.</div>';
+    }
+  }catch(e){ /* non-critical */ }
+}
+
+loadAttackTypes();
+refreshAttackLog();
+loadVoiceStatus();
+loadVoiceAttackTypes();
+loadAttackSourceUsers();
+loadAuditLog();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+Flask==3.1.3
+opencv-contrib-python==4.13.0.92
+numpy
+Pillow
+
+# Blink detection (facial landmark / EAR-based) needs no extra pip package —
+# it uses cv2.face, already part of opencv-contrib-python above. It does
+# need lbfmodel.yaml (bundled in this folder); if missing, app.py will try
+# to download it automatically on first run from its canonical GitHub URL.
+
+# Voice ID (second biometric factor) — optional but recommended:
+librosa
+scikit-learn
+sounddevice
+# On Linux, sounddevice also needs the system PortAudio library:
+#   sudo apt install libportaudio2
+# On Windows/macOS, the sounddevice wheel bundles PortAudio and usually
+# needs nothing extra.
+
+# Voice challenge-response content verification (offline speech recognition,
+# CPU-only, no GPU/cloud) — optional; without it, voice verification still
+# works but only checks WHO is speaking, not WHAT was said:
+vosk
+# Needs the vosk-model-small-en-us-0.15/ model folder (~40MB, bundled in
+# this project folder). If missing, app.py tries to download+extract it
+# automatically on first run from its GitHub mirror.
