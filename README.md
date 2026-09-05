@@ -4,13 +4,6 @@ Deepfake-resistant facial identity verification with a live trust-score
 engine and risk-based adaptive authentication, built on OpenCV (Haar
 cascade + LBPH) and Flask.
 
-## Visual design
-
-Light, restrained enterprise-security aesthetic — white/light-gray surfaces,
-a deep emerald-teal + indigo accent pair, subtle card shadows instead of
-glow effects. Typography is IBM Plex Sans (headings), Inter (body), and
-IBM Plex Mono (data/scores/IDs).
-
 ## Run it
 
 ```
